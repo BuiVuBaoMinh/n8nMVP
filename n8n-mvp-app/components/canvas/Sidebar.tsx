@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Bot, Split, Globe, MousePointerClick, Terminal, GripVertical, Search, ChevronDown } from 'lucide-react';
+import { Bot, Split, Globe, MousePointerClick, Terminal, GripVertical } from 'lucide-react';
 
 export default function Sidebar() {
   const [position, setPosition] = useState({ x: 20, y: 100 });
   const [isDragging, setIsDragging] = useState(false);
   const dragRef = useRef<{ startX: number, startY: number, initialX: number, initialY: number } | null>(null);
 
-  // Drag logic
+  // Drag logic for the Sidebar window
   const handleMouseDown = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).tagName === 'INPUT') return;
     setIsDragging(true);
@@ -44,11 +44,36 @@ export default function Sidebar() {
   };
 
   const nodeTypes = [
-    { type: 'agent', label: 'Agent', desc: 'Dynamically choose and utilize tools during runtime', icon: <Bot className="w-5 h-5 text-[#088395]" /> }, // Action Teal
-    { type: 'condition', label: 'Condition', desc: 'Split flows based on If/Else conditions', icon: <Split className="w-5 h-5 text-[#09637e]" /> }, // Orange accent
-    { type: 'trigger', label: 'Manual Trigger', desc: 'Start flow manually', icon: <MousePointerClick className="w-5 h-5 text-[#09637e]" /> }, // Primary Teal
-    { type: 'custom', label: 'Custom Function', desc: 'Execute custom JS code', icon: <Terminal className="w-5 h-5 text-[#09637e]" /> }, // Pink accent
-    { type: 'http', label: 'HTTP Request', desc: 'Send a HTTP request', icon: <Globe className="w-5 h-5 text-[#09637e]" /> }, // Green accent
+    { 
+      type: 'agent', 
+      label: 'Agent', 
+      desc: 'Dynamically choose and utilize tools during runtime', 
+      icon: <Bot className="w-5 h-5 text-[#088395]" /> 
+    }, 
+    { 
+      type: 'condition', 
+      label: 'Condition', 
+      desc: 'Split flows based on If/Else conditions', 
+      icon: <Split className="w-5 h-5 text-[#09637e]" /> 
+    }, 
+    { 
+      type: 'trigger', 
+      label: 'Manual Trigger', 
+      desc: 'Start flow manually', 
+      icon: <MousePointerClick className="w-5 h-5 text-[#09637e]" /> 
+    }, 
+    { 
+      type: 'customFunction',
+      label: 'Custom Function', 
+      desc: 'Execute custom JS code', 
+      icon: <Terminal className="w-5 h-5 text-[#09637e]" /> 
+    }, 
+    { 
+      type: 'httpRequest',
+      label: 'HTTP Request', 
+      desc: 'Send a HTTP request', 
+      icon: <Globe className="w-5 h-5 text-[#09637e]" /> 
+    }, 
   ];
 
   return (
@@ -56,19 +81,18 @@ export default function Sidebar() {
       style={{ left: position.x, top: position.y }}
       className="absolute w-[320px] bg-white rounded-[10px] border border-[#7ab2b2] shadow-2xl z-50 flex flex-col font-sans"
     >
-      {/* Header & Search */}
+      {/* Header */}
       <div 
         onMouseDown={handleMouseDown}
-        className="p-[5] pb-2 space-y-4 cursor-move bg-[#09637e] rounded-t-[10px]"
+        className="p-4 pb-2 space-y-4 cursor-move bg-[#09637e] rounded-t-[10px]"
       >
-        <div className="flex items-center justify-between rounded-[1]">
+        <div className="flex items-center justify-between">
           <h2 className="font-bold text-[#FFFFFF] text-md">Add Nodes</h2>
         </div>
       </div>
       
       {/* Node List Container */}
-      <div className="flex-1 overflow-y-auto p-[3] h-[400px] scrollbar-thin scrollbar-thumb-[#ebf4f6] scrollbar-track-transparent">
-
+      <div className="flex-1 overflow-y-auto p-4 h-100 scrollbar-thin scrollbar-thumb-[#ebf4f6] scrollbar-track-transparent">
         <div className="space-y-4">
             {nodeTypes.map((node) => (
             <div
