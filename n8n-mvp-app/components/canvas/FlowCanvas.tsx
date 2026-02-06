@@ -75,17 +75,40 @@ function FlowCanvasInner() {
     [screenToFlowPosition, setNodes],
   );
 
+  const [workflowId, setWorkflowId] = useState<string | null> (null);
+
   const handleSave = async () => {
+    const workflowData = {
+      _id: workflowId,
+      name: "Example Workflow",
+      nodes,
+      edges,
+    };
+
     const res = await fetch('/api/workflows', {
       method: 'POST',
-      body: JSON.stringify({ name: "My Workflow", nodes, edges }),
+      body: JSON.stringify(workflowData),
     });
-    if (res.ok) alert('Workflow Saved!');
+
+    const data = await res.json();
+    if (res.ok) {
+      setWorkflowId(data._id);
+      alert(`Workflow Saved! ID: ${data._id}`);
+    }
   };
 
   const handleRun = async () => {
-    const res = await fetch('/api/execution', { method: 'POST' });
-    if (res.ok) alert('Job Sent!');
+    if (!workflowId) {
+      alert("Please save the workflow first!");
+      return;
+    }
+
+    const res = await fetch('/api/execution', { 
+      method: 'POST', 
+      body: JSON.stringify({ workflowId })
+    });
+
+    if (res.ok) alert('Execution Started!');
   };
 
   return (
@@ -127,7 +150,6 @@ function FlowCanvasInner() {
   );
 }
 
-// Wrapper ensures ReactFlowProvider is available
 export default function FlowCanvas() {
   return (
     <ReactFlowProvider>
