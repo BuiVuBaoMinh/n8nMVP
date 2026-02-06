@@ -76,7 +76,7 @@ export class ExecutionEngine {
                 const isMinh = inputData.userName === 'Minh';
                 return { ...inputData, result: isMinh };
             
-            case 'http': // Use http as the email sender (in this MVP only)
+            case 'httpRequest': // Use http as the email sender (in this MVP only)
                 if (!inputData.userEmail) {
                     console.log("   [Action] No email address found to send to.");
                     return { sent: false };
@@ -113,7 +113,7 @@ export class ExecutionEngine {
                 return { text: `AI processed: ${inputData.userName}`, model: 'gpt-4'};
 
             default:
-                return { info: 'Pass-through' };
+                return { info: 'Pass-through', type: nodeType };
         }
     }
 }

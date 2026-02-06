@@ -92,14 +92,38 @@ function FlowCanvasInner() {
       nodes,
       edges,
     };
-    // Mock save logic
-    console.log("Saving workflow:", workflowData);
-    alert(`Workflow Saved! (Check console)`);
+
+    // POST for new, PUT for existing
+    const method = workflowId ? 'PUT' : 'POST';
+
+    const res = await fetch('/api/workflows', {
+      method: method, 
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(workflowData),
+    });
+
+    const data = await res.json();
+    
+    if (res.ok) {
+      setWorkflowId(data._id);
+      alert(`Workflow Saved! ID: ${data._id}`);
+    } else {
+        alert("Error saving workflow");
+    }
   };
 
   const handleRun = async () => {
-    if (!workflowId) { alert("Please save first!"); return; }
-    alert('Execution Started!');
+    if (!workflowId) {
+      alert("Please save the workflow first!");
+      return;
+    }
+
+    const res = await fetch('/api/execution', { 
+      method: 'POST', 
+      body: JSON.stringify({ workflowId })
+    });
+
+    if (res.ok) alert('Execution Started!');
   };
 
   return (

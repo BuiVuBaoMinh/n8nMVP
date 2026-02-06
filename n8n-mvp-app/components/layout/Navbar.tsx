@@ -52,7 +52,7 @@ export default function Navbar({ onSave, onRun, isSaved }: NavbarProps) {
 
         <button 
           onClick={onSave}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border border-[#7ab2b2]/50 text-[#ebf4f6] hover:bg-[#088395] hover:border-[#ebf4f6] transition-all"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border border-[#7ab2b2]/50 text-[#ebf4f6] hover:bg-[#088395] hover:border-[#ebf4f6] hover:cursor-pointer transition-all"
         >
           <Save className="w-4 h-4" />
           <span>Save</span>
@@ -60,7 +60,7 @@ export default function Navbar({ onSave, onRun, isSaved }: NavbarProps) {
 
         <button 
           onClick={onRun}
-          className="group flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-bold bg-[#ebf4f6] text-[#09637e] hover:bg-white hover:scale-105 transition-all shadow-md active:scale-95"
+          className="group flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-bold bg-[#ebf4f6] text-[#09637e] hover:bg-white hover:scale-105 hover:cursor-pointer transition-all shadow-md active:scale-95"
         >
           <Play className="w-4 h-4 fill-[#09637e] group-hover:fill-[#088395]" />
           <span>Run</span>
