@@ -8,11 +8,10 @@ export async function POST(req: Request) {
   
   let workflow;
   
-  // Check if a valid ID exists (not null, not undefined, not empty string)
   if (body._id) {
     workflow = await Workflow.findByIdAndUpdate(body._id, body, { new: true });
   } else {
-    // CRITICAL FIX: Remove the _id key entirely so Mongoose generates a new ObjectId
+    // Remove the _id key entirely so Mongoose generates a new ObjectId
     delete body._id; 
     workflow = await Workflow.create(body);
   }

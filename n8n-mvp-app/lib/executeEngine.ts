@@ -26,6 +26,8 @@ export class ExecutionEngine {
             const currentNode = queue.shift();
             if (!currentNode) break;
 
+            const nodeType = currentNode.data?.jobType || currentNode.type;
+
             try {
                 const output = await this.executeNode(currentNode);
                 this.context[currentNode.id] = output; // Store output in context
@@ -42,7 +44,7 @@ export class ExecutionEngine {
             for (const edge of connectedEdges) {
                 // Handle Branching (Condition Nodes)
                 // If the current node was a condition, we check if the edge matches the result
-                if (currentNode.type === 'condition') {
+                if (nodeType === 'condition') {
                 const result = this.context[currentNode.id]?.result; // true or false
                 const requiredHandle = result ? 'true' : 'false';
                 
@@ -60,7 +62,9 @@ export class ExecutionEngine {
 
     // Node logic
     private async executeNode(node: any) {
-        switch (node.type) {
+        const nodeType = node.data?.jobType || node.type;
+
+        switch (nodeType) {
             case 'input':
             case 'trigger':
                 return { triggeredAt: new Date().toISOString() };
@@ -81,7 +85,7 @@ export class ExecutionEngine {
                 return { status: 200, data: { success: true } };
 
             default:
-                return { info: 'Pass-through node' };
+                return { info: 'Pass-through node' , typeWas: nodeType};
         }
     }
 }

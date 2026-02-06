@@ -22,7 +22,7 @@ const initialNodes: Node[] = [
   { 
     id: '1', 
     position: { x: 250, y: 150 }, 
-    data: { label: 'Start Webhook' }, 
+    data: { label: 'Start Webhook', jobType: 'trigger' }, 
     type: 'input',
     style: { background: '#fff', border: '1px solid #777', borderRadius: '8px', padding: '10px', width: 150 }
   },
@@ -59,7 +59,7 @@ function FlowCanvasInner() {
         id: `${type}-${Date.now()}`,
         type: type === 'trigger' ? 'input' : 'default',
         position,
-        data: { label: label },
+        data: { label: label, jobType: type },
         style: { 
           background: '#fff', 
           border: '1px solid #e2e8f0', 
@@ -69,6 +69,8 @@ function FlowCanvasInner() {
           boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1)'
         }
       };
+
+      console.log(newNode);
 
       setNodes((nds) => nds.concat(newNode));
     },
