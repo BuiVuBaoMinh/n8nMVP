@@ -17,6 +17,7 @@ import {
 import '@xyflow/react/dist/style.css';
 import Sidebar from './Sidebar';
 import ConditionNode from './ConditionNode';
+import Navbar from '../layout/Navbar';
 
 
 const initialNodes: Node[] = [
@@ -33,6 +34,7 @@ function FlowCanvasInner() {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const { screenToFlowPosition } = useReactFlow();
 
   const onConnect = useCallback((params: Connection) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
@@ -40,6 +42,10 @@ function FlowCanvasInner() {
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
+  }, []);
+
+  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+    setSelectedNodeId(node.id);
   }, []);
 
   const onDrop = useCallback(
@@ -118,25 +124,20 @@ function FlowCanvasInner() {
   };
 
   return (
-    <div className="h-screen w-full flex flex-col">
-      {/* Header */}
-      <header className="h-16 border-b bg-white flex items-center justify-between px-6 z-10 shrink-0">
-        <h1 className="font-bold text-xl text-slate-800">n8n Minimal</h1>
-        <div className="flex gap-3">
-          <button onClick={handleSave} className="px-4 py-2 bg-slate-200 text-slate-800 rounded hover:bg-slate-300 font-medium transition">
-            Save
-          </button>
-          <button onClick={handleRun} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium transition shadow-sm">
-            Run Workflow
-          </button>
-        </div>
-      </header>
+    <div className="h-screen w-full flex flex-col bg-[#ebf4f6]"> {/* Applied Ice Blue Background */}
       
-      {/* Main Content Area */}
-      <div className="flex-1 flex overflow-hidden">
+      {/* 1. New Navbar */}
+      <Navbar 
+        onSave={handleSave} 
+        onRun={handleRun} 
+        isSaved={!!workflowId} 
+      />
+      
+      <div className="flex-1 flex overflow-hidden relative">
         <Sidebar />
         
-        <div className="flex-1 bg-slate-50 relative" ref={reactFlowWrapper}>
+        {/* Canvas Background Color Update */}
+        <div className="flex-1 bg-[#ebf4f6] relative" ref={reactFlowWrapper}>
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -146,11 +147,15 @@ function FlowCanvasInner() {
             onConnect={onConnect}
             onDrop={onDrop}
             onDragOver={onDragOver}
+            onNodeClick={onNodeClick}
+            onPaneClick={() => setSelectedNodeId(null)}
             fitView
           >
-            <Background color="#94a3b8" gap={16} size={1} variant={BackgroundVariant.Dots}/>
-            <Controls />
+            {/* Dots Color Update */}
+            <Background color="#7ab2b2" gap={20} size={1} variant={BackgroundVariant.Dots}/>
+            <Controls className="bg-white border-none shadow-md rounded-lg text-[#09637e] fill-[#09637e]" />
           </ReactFlow>
+
         </div>
       </div>
     </div>
