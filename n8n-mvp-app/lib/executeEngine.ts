@@ -67,8 +67,6 @@ export class ExecutionEngine {
                 // MOCK DATA
                 return { 
                     triggeredAt: new Date().toISOString(),
-                    userName: "Minh",
-                    userEmail: "legacyofvall@gmail.com" 
                 };
             
             case 'condition':
@@ -77,14 +75,15 @@ export class ExecutionEngine {
                 return { ...inputData, result: isMinh };
             
             case 'httpRequest': // Use http as the email sender (in this MVP only)
-                if (!inputData.userEmail) {
-                    console.log("   [Action] No email address found to send to.");
-                    return { sent: false };
+                const targetEmail = node.data?.recipientEmail || inputData.userEmail;
+
+               if (!targetEmail) {
+                    console.log("   [Action] No email found in UI Config or Input Data.");
+                    return { sent: false, error: 'Missing recipient email' };
                 }
 
-                console.log(`   [Action] Attempting to send REAL email via Gmail...`);
+                console.log(`   [Action] Sending email to: ${targetEmail}`);
 
-                // NODEMAILER SETUP
                 const transporter = nodemailer.createTransport({
                     service: 'gmail',
                     auth: {
@@ -95,9 +94,9 @@ export class ExecutionEngine {
 
                 const mailOptions = {
                     from: process.env.GMAIL_USER,
-                    to: inputData.userEmail,
+                    to: targetEmail, 
                     subject: 'Workflow Notification',
-                    text: `Hello ${inputData.userName},\n\nThis is an automated message from your n8n-mvp workflow engine.\n\nApproval Status: GRANTED`,
+                    text: `Hello,\n\nThis is an automated message to ${targetEmail}.\n\nApproval Status: GRANTED`,
                 };
 
                 try {

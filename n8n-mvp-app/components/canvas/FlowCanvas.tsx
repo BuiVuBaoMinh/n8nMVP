@@ -114,7 +114,7 @@ function FlowCanvasInner() {
       edges,
     };
 
-    const method = workflowId ? 'PUT' : 'POST';
+    const method = 'POST';
 
     const res = await fetch('/api/workflows', {
       method: method, 
