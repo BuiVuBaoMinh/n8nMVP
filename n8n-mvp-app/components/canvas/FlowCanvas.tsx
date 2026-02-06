@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { 
   ReactFlow, 
   Background, 
@@ -16,6 +16,7 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import Sidebar from './Sidebar';
+import ConditionNode from './ConditionNode';
 
 
 const initialNodes: Node[] = [
@@ -57,16 +58,15 @@ function FlowCanvasInner() {
 
       const newNode: Node = {
         id: `${type}-${Date.now()}`,
-        type: type === 'trigger' ? 'input' : 'default',
+        type: type === 'condition' ? 'condition' : (type === 'trigger' ? 'input' : 'default'),
         position,
         data: { label: label, jobType: type },
-        style: { 
+        style: type === 'condition' ? {} : { 
           background: '#fff', 
           border: '1px solid #e2e8f0', 
           borderRadius: '8px', 
           padding: '10px', 
-          width: 150,
-          boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1)'
+          width: 150 
         }
       };
 
@@ -76,6 +76,10 @@ function FlowCanvasInner() {
     },
     [screenToFlowPosition, setNodes],
   );
+
+  const nodeTypes = useMemo(() => ({
+    condition: ConditionNode,
+  }), []);
 
   const [workflowId, setWorkflowId] = useState<string | null> (null);
 
@@ -136,6 +140,7 @@ function FlowCanvasInner() {
           <ReactFlow
             nodes={nodes}
             edges={edges}
+            nodeTypes={nodeTypes}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
