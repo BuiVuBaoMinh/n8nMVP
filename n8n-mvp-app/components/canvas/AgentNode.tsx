@@ -2,11 +2,19 @@ import React, { memo } from 'react';
 import { Handle, Position } from '@xyflow/react';
 import { Bot } from 'lucide-react';
 
-const AgentNode = ({ data }: any) => {
+const AgentNode = ({ data, selected }: any) => {
   return (
-    <div className="relative px-4 py-2 shadow-md rounded-md bg-white border-2 border-violet-500 min-w-50">
+    <div 
+      className={`relative px-4 py-2 shadow-md rounded-md min-w-50 border-2 transition-all duration-200
+        hover:cursor-pointer active:cursor-grabbing
+        ${selected 
+          ? 'border-violet-600 bg-violet-200 shadow-violet-200 shadow-lg' 
+          : 'border-violet-500 bg-white'
+        }
+      `}
+    >
       <div className="flex items-center">
-        <Bot className="w-4 h-4 text-violet-500 mr-2" />
+        <Bot className={`w-4 h-4 mr-2 ${selected ? 'text-violet-700' : 'text-violet-500'}`} />
         <div className="text-sm font-bold text-gray-700">Agent</div>
       </div>
       <div className="text-xs text-gray-500 mt-1">{data.label || 'AI Agent'}</div>

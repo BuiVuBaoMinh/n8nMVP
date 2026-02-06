@@ -11,9 +11,11 @@ import {
   BackgroundVariant,
   ReactFlowProvider,
   useReactFlow,
-  Node
+  Node,
+  OnNodesDelete // Import type for delete handler
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import { Trash2 } from 'lucide-react'; // Import Trash icon
 
 import Sidebar from './Sidebar'; 
 import Navbar from '@/components/layout/Navbar'; 
@@ -47,7 +49,10 @@ function FlowCanvasInner() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
-  const { screenToFlowPosition } = useReactFlow();
+  
+  // Destructure deleteElements to handle manual deletion
+  const { screenToFlowPosition, deleteElements } = useReactFlow();
+  
   const [workflowId, setWorkflowId] = useState<string | null>(null);
 
   const onConnect = useCallback((params: Connection) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
@@ -85,6 +90,22 @@ function FlowCanvasInner() {
     setSelectedNodeId(node.id);
   }, []);
 
+  // Handler for when nodes are deleted via Keyboard (Backspace/Delete)
+  const onNodesDelete = useCallback<OnNodesDelete>((deleted) => {
+    // If the currently selected node is among the deleted ones, clear selection
+    if (deleted.some(node => node.id === selectedNodeId)) {
+      setSelectedNodeId(null);
+    }
+  }, [selectedNodeId]);
+
+  // Handler for the Manual Delete Button
+  const handleDeleteSelected = useCallback(() => {
+    if (selectedNodeId) {
+      deleteElements({ nodes: [{ id: selectedNodeId }] });
+      setSelectedNodeId(null);
+    }
+  }, [selectedNodeId, deleteElements]);
+
   const handleSave = async () => {
     const workflowData = {
       ...(workflowId && { _id: workflowId }),
@@ -93,7 +114,6 @@ function FlowCanvasInner() {
       edges,
     };
 
-    // POST for new, PUT for existing
     const method = workflowId ? 'PUT' : 'POST';
 
     const res = await fetch('/api/workflows', {
@@ -138,6 +158,20 @@ function FlowCanvasInner() {
         <Sidebar />
         
         <div className="flex-1 bg-[#ebf4f6] relative" ref={reactFlowWrapper}>
+          
+          {/* Floating Delete Button - visible only when a node is selected */}
+          {selectedNodeId && (
+            <div className="absolute top-4 right-4 z-10 animate-fade-in">
+              <button
+                onClick={handleDeleteSelected}
+                className="flex items-center gap-2 px-4 py-2 bg-white text-red-500 rounded-md shadow-md border border-red-100 hover:bg-red-50 hover:border-red-200 transition-all font-medium text-sm"
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete Node
+              </button>
+            </div>
+          )}
+
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -148,8 +182,10 @@ function FlowCanvasInner() {
             onDrop={onDrop}
             onDragOver={onDragOver}
             onNodeClick={onNodeClick}
+            onNodesDelete={onNodesDelete} // Sync state on keyboard delete
             onPaneClick={() => setSelectedNodeId(null)}
             fitView
+            deleteKeyCode={['Backspace', 'Delete']} // Ensure keys work
           >
             <Background color="#7ab2b2" gap={20} size={1} variant={BackgroundVariant.Dots}/>
             <Controls className="bg-white border-none shadow-md rounded-lg text-[#09637e] fill-[#09637e]" />
