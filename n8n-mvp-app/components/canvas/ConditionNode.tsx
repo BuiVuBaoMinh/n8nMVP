@@ -1,46 +1,48 @@
-import React, { memo } from 'react';
-import { Handle, Position } from '@xyflow/react';
+import React, { memo, useCallback } from 'react';
+import { Handle, Position, useReactFlow } from '@xyflow/react';
 import { GitFork } from 'lucide-react';
 
-const ConditionNode = ({ data, selected }: any) => {
+const ConditionNode = ({ id, data, selected }: any) => {
+  const { updateNodeData } = useReactFlow();
+
+  const handleMatchChange = useCallback((evt: React.ChangeEvent<HTMLInputElement>) => {
+    updateNodeData(id, { expectedName: evt.target.value });
+  }, [id, updateNodeData]);
+
   return (
     <div 
-      className={`relative px-4 py-2 shadow-md rounded-md min-w-50 border-2 transition-all duration-200
-        hover:cursor-pointer active:cursor-grabbing
-        ${selected 
-          ? 'border-orange-600 bg-orange-200 shadow-orange-200 shadow-lg' 
-          : 'border-orange-500 bg-white'
-        }
+      className={`relative px-4 py-3 shadow-md rounded-md min-w-62.5 border-2 transition-all bg-white
+        ${selected ? 'border-orange-600 shadow-lg' : 'border-orange-500'}
       `}
     >
-      <div className="flex items-center">
+      <div className="flex items-center mb-3 border-b border-gray-100 pb-2">
         <GitFork className={`w-4 h-4 mr-2 ${selected ? 'text-orange-700' : 'text-orange-500'}`} />
-        <div className="text-sm font-bold text-gray-700">Condition</div>
+        <div className="text-sm font-bold text-gray-700">If / Else</div>
       </div>
-      <div className="text-xs text-gray-500 mt-1">{data.label}</div>
 
-      {/* Input Handle */}
+      <div className="flex flex-col gap-2">
+        <label className="text-[10px] uppercase font-bold text-gray-500">Continue if Name equals:</label>
+        <input 
+          className="nodrag w-full text-xs px-2 py-1.5 border rounded focus:outline-none focus:border-orange-500"
+          placeholder="e.g. Minh"
+          value={data.expectedName || ''}
+          onChange={handleMatchChange}
+        />
+      </div>
+
       <Handle type="target" position={Position.Left} className="w-3 h-3 bg-slate-400" />
+      
+      {/* TRUE Path */}
+      <div className="absolute -right-3 top-10 flex items-center">
+        <span className="mr-2 text-[10px] font-bold text-green-600">True</span>
+        <Handle type="source" position={Position.Right} id="true" className="w-3 h-3 bg-green-500" />
+      </div>
 
-      {/* Output Handle: TRUE */}
-      <Handle 
-        type="source" 
-        position={Position.Right} 
-        id="true"
-        className="w-3 h-3 bg-green-500" 
-        style={{ top: '35%' }}
-      />
-      <div className="absolute right-0 top-[23%] text-[10px] text-green-600 font-bold transform translate-x-[140%]">TRUE</div>
-
-      {/* Output Handle: FALSE */}
-      <Handle 
-        type="source" 
-        position={Position.Right} 
-        id="false"
-        className="w-3 h-3 bg-red-500" 
-        style={{ top: '70%' }}
-      />
-      <div className="absolute right-0 top-[50%] text-[10px] text-red-600 font-bold transform translate-x-[140%] translate-y-[20%]">FALSE</div>
+      {/* FALSE Path */}
+      <div className="absolute -right-3 top-20 flex items-center">
+        <span className="mr-2 text-[10px] font-bold text-red-600">False</span>
+        <Handle type="source" position={Position.Right} id="false" className="w-3 h-3 bg-red-500" />
+      </div>
     </div>
   );
 };

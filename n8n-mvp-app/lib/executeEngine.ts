@@ -64,15 +64,24 @@ export class ExecutionEngine {
         switch (nodeType) {
             case 'input':
             case 'trigger':
-                // MOCK DATA
                 return { 
                     triggeredAt: new Date().toISOString(),
+                    userName: node.data?.userName || "Guest", 
+                    userEmail: "legacyofvall@gmail.com"
                 };
             
             case 'condition':
-                console.log(`   [Logic] Checking if '${inputData.userName}' === 'Minh'...`);
-                const isMinh = inputData.userName === 'Minh';
-                return { ...inputData, result: isMinh };
+                const expectedName = node.data?.expectedName || 'Minh';
+                const actualName = inputData.userName;
+
+                console.log(`   [Logic] Checking: Is '${actualName}' === '${expectedName}'?`);
+                
+                const isMatch = actualName === expectedName;
+                
+                return { 
+                    ...inputData, 
+                    result: isMatch // This boolean guides the graph traversal in runWorkflow()
+                };
             
             case 'httpRequest': // Use http as the email sender (in this MVP only)
                 const targetEmail = node.data?.recipientEmail || inputData.userEmail;

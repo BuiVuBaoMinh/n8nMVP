@@ -1,25 +1,36 @@
-import React, { memo } from 'react';
-import { Handle, Position } from '@xyflow/react';
-import { MousePointerClick } from 'lucide-react';
+import React, { memo, useCallback } from 'react';
+import { Handle, Position, useReactFlow } from '@xyflow/react';
+import { Play } from 'lucide-react';
 
-const ManualTriggerNode = ({ data, selected }: any) => {
+const ManualTriggerNode = ({ id, data, selected }: any) => {
+  const { updateNodeData } = useReactFlow();
+
+  const handleNameChange = useCallback((evt: React.ChangeEvent<HTMLInputElement>) => {
+    updateNodeData(id, { userName: evt.target.value });
+  }, [id, updateNodeData]);
+
   return (
     <div 
-      className={`relative px-4 py-2 shadow-md rounded-md min-w-50 border-2 transition-all duration-200
-        hover:cursor-pointer active:cursor-grabbing
-        ${selected 
-          ? 'border-cyan-600 bg-cyan-200 shadow-cyan-200 shadow-lg' 
-          : 'border-cyan-500 bg-white'
-        }
+      className={`relative px-4 py-3 shadow-md rounded-md min-w-62.5 border-2 transition-all bg-white
+        ${selected ? 'border-emerald-600 shadow-lg' : 'border-emerald-500'}
       `}
     >
-      <div className="flex items-center">
-        <MousePointerClick className={`w-4 h-4 mr-2 ${selected ? 'text-cyan-700' : 'text-cyan-500'}`} />
+      <div className="flex items-center mb-3 border-b border-gray-100 pb-2">
+        <Play className={`w-4 h-4 mr-2 ${selected ? 'text-emerald-700' : 'text-emerald-500'}`} />
         <div className="text-sm font-bold text-gray-700">Manual Trigger</div>
       </div>
-      <div className="text-xs text-gray-500 mt-1">{data.label || 'Start flow manually'}</div>
-      
-      <Handle type="source" position={Position.Right} className="w-3 h-3 bg-cyan-500" />
+
+      <div className="flex flex-col gap-2">
+        <label className="text-[10px] uppercase font-bold text-gray-500">Test User Name</label>
+        <input 
+          className="nodrag w-full text-xs px-2 py-1.5 border rounded focus:outline-none focus:border-emerald-500"
+          placeholder="e.g. Minh"
+          value={data.userName || ''}
+          onChange={handleNameChange}
+        />
+      </div>
+
+      <Handle type="source" position={Position.Right} className="w-3 h-3 bg-emerald-500" />
     </div>
   );
 };
