@@ -11,14 +11,14 @@ import {
   BackgroundVariant,
   ReactFlowProvider,
   useReactFlow,
-  Edge,
   Node
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import Sidebar from './Sidebar';
-import ConditionNode from './ConditionNode';
-import Navbar from '../layout/Navbar';
 
+import Sidebar from './Sidebar'; // Importing the file we just fixed
+
+import Navbar from '@/components/layout/Navbar'; 
+import ConditionNode from './ConditionNode';
 
 const initialNodes: Node[] = [
   { 
@@ -36,31 +36,19 @@ function FlowCanvasInner() {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const { screenToFlowPosition } = useReactFlow();
+  const [workflowId, setWorkflowId] = useState<string | null>(null);
 
   const onConnect = useCallback((params: Connection) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
-
-  const onDragOver = useCallback((event: React.DragEvent) => {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
-  }, []);
-
-  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
-    setSelectedNodeId(node.id);
-  }, []);
-
+  
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
-
       const type = event.dataTransfer.getData('application/reactflow/type');
       const label = event.dataTransfer.getData('application/reactflow/label');
 
       if (!type) return;
 
-      const position = screenToFlowPosition({
-        x: event.clientX,
-        y: event.clientY,
-      });
+      const position = screenToFlowPosition({ x: event.clientX, y: event.clientY });
 
       const newNode: Node = {
         id: `${type}-${Date.now()}`,
@@ -75,58 +63,60 @@ function FlowCanvasInner() {
           width: 150 
         }
       };
-
-      console.log(newNode);
-
       setNodes((nds) => nds.concat(newNode));
     },
     [screenToFlowPosition, setNodes],
   );
 
-  const nodeTypes = useMemo(() => ({
-    condition: ConditionNode,
-  }), []);
+  const onDragOver = useCallback((event: React.DragEvent) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  }, []);
 
-  const [workflowId, setWorkflowId] = useState<string | null> (null);
+  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+    setSelectedNodeId(node.id);
+  }, []);
+
+  const updateNodeData = useCallback((id: string, newData: any) => {
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === id) {
+          return { ...node, data: newData };
+        }
+        return node;
+      })
+    );
+  }, [setNodes]);
+
+  const nodeTypes = useMemo(() => ({ condition: ConditionNode }), []);
 
   const handleSave = async () => {
     const workflowData = {
-      _id: workflowId,
+      ...(workflowId && { _id: workflowId }),
       name: "Example Workflow",
       nodes,
       edges,
     };
-
-    const res = await fetch('/api/workflows', {
-      method: 'POST',
-      body: JSON.stringify(workflowData),
-    });
-
+    const res = await fetch('/api/workflows', { method: 'POST', body: JSON.stringify(workflowData) });
     const data = await res.json();
     if (res.ok) {
       setWorkflowId(data._id);
-      alert(`Workflow Saved! ID: ${data._id}`);
+      alert(`Workflow Saved!`);
     }
   };
 
   const handleRun = async () => {
-    if (!workflowId) {
-      alert("Please save the workflow first!");
-      return;
-    }
-
-    const res = await fetch('/api/execution', { 
-      method: 'POST', 
-      body: JSON.stringify({ workflowId })
-    });
-
+    if (!workflowId) { alert("Please save first!"); return; }
+    const res = await fetch('/api/execution', { method: 'POST', body: JSON.stringify({ workflowId }) });
     if (res.ok) alert('Execution Started!');
   };
 
+  const selectedNode = nodes.find((n) => n.id === selectedNodeId);
+
   return (
-    <div className="h-screen w-full flex flex-col bg-[#ebf4f6]"> {/* Applied Ice Blue Background */}
+    <div className="h-screen w-full flex flex-col bg-[#ebf4f6]"> 
       
-      {/* 1. New Navbar */}
+      {/* Navbar */}
       <Navbar 
         onSave={handleSave} 
         onRun={handleRun} 
@@ -136,7 +126,6 @@ function FlowCanvasInner() {
       <div className="flex-1 flex overflow-hidden relative">
         <Sidebar />
         
-        {/* Canvas Background Color Update */}
         <div className="flex-1 bg-[#ebf4f6] relative" ref={reactFlowWrapper}>
           <ReactFlow
             nodes={nodes}
@@ -151,11 +140,9 @@ function FlowCanvasInner() {
             onPaneClick={() => setSelectedNodeId(null)}
             fitView
           >
-            {/* Dots Color Update */}
             <Background color="#7ab2b2" gap={20} size={1} variant={BackgroundVariant.Dots}/>
             <Controls className="bg-white border-none shadow-md rounded-lg text-[#09637e] fill-[#09637e]" />
           </ReactFlow>
-
         </div>
       </div>
     </div>
