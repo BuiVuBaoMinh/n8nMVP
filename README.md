@@ -1,12 +1,10 @@
-# n8nMVP
-
-# n8n-MVP: Low-Code Workflow Automation Platform
+# n8n-MVP Workflow Automation Platform
 
 Hello, this is my attempt in building the very very MVP version of *n8n*.
 
-![Status](https://img.shields.io/badge/Status-MVP-success) ![Stack](https://img.shields.io/badge/Stack-Next.js_|_MongoDB_|_Redis_|_BullMQ-blue)
+![Stack](https://img.shields.io/badge/Stack-Next.js_|_MongoDB_|_Redis_|_BullMQ-blue)
 
-## 🚀 Minimal Features (I guess)
+## Minimal Features (I guess)
 
 * **Visual Workflow Editor:** Drag-and-drop interface powered by **React Flow** to connect nodes.
 * **Asynchronous Execution:** Heavy workflows are offloaded to **Redis** and processed by a dedicated **BullMQ Worker**, ensuring the UI never freezes.
@@ -18,7 +16,7 @@ Hello, this is my attempt in building the very very MVP version of *n8n*.
     * **AI Agent:** (Mocked) Placeholder for LLM processing.
     * **Custom Code:** (Mocked) Placeholder for a custom code processor.
 
-## 🛠 Tech Stack
+## Tech Stack
 
 * **Frontend:** Next.js 14 (App Router), Tailwind CSS, React Flow, Lucide React.
 * **Backend:** Next.js API Routes (Serverless functions).
@@ -26,7 +24,7 @@ Hello, this is my attempt in building the very very MVP version of *n8n*.
 * **Queue System:** Redis + BullMQ - Manages job distribution.
 * **Worker:** TypeScript/Node.js - A standalone process that executes the graph logic (`ExecutionEngine`).
 
-## 📦 Prerequisites
+## Prerequisites
 
 Before running the project, ensure you have the following installed:
 
@@ -34,7 +32,7 @@ Before running the project, ensure you have the following installed:
 * **MongoDB** (Running locally or via Atlas)
 * **Redis** (Running locally on port `6379`)
 
-## ⚡ Installation & Setup
+## Installation & Setup
 
 1.  **Clone the repository:**
     ```bash
@@ -76,7 +74,7 @@ Before running the project, ensure you have the following installed:
     docker-compose up
     ```
 
-## 🏃‍♂️ How to Run
+## How to Run
 
 This architecture requires **two** separate processes running simultaneously: the web server and the background worker.
 
@@ -93,7 +91,7 @@ npx tsx executionWorker.ts
 ```
 > You should see: ```Worker is running and listening for jobs...```
 
-## 🎮 Usage Guide
+## Usage Guide
 ### 1. Create a Workflow:
 
 * Open http://localhost:3000.
@@ -152,7 +150,7 @@ npx tsx executionWorker.ts
 * The above log is from this example workflow:
 ![alt text](image.png)
 
-## 📂 Project Structure
+## Project Structure
 ```bash
 .
 ├── n8n-mvp-app/
