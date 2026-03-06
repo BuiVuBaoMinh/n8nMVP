@@ -5,7 +5,7 @@ Hello, this is my attempt in building the very very MVP version of *n8n*.
 ![Stack](https://img.shields.io/badge/Stack-Next.js_|_MongoDB_|_Redis_|_BullMQ-blue)
 
 ## Updated:
-I have deployed this on Vercel, no need to locally host: ![n8nMockMVP](https://n8n-mvp.vercel.app/)
+I have deployed this on Vercel, no need to locally host: https://n8n-mvp.vercel.app/
 
 ## Minimal Features (I guess)
 
